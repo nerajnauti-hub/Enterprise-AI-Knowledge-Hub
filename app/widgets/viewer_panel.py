@@ -8,7 +8,20 @@ class ViewerPanel(QTextEdit):
 
         self.setReadOnly(True)
 
+        self.current_file = None
+
         self.setPlaceholderText(
-            "Document Viewer\n\n"
-            "PDF, DOCX and Excel documents will appear here."
+            "Select a document from the left panel."
         )
+
+    def load_text(self, filepath, text):
+
+        self.current_file = filepath
+
+        self.setPlainText(text)
+
+    def clear_document(self):
+
+        self.current_file = None
+
+        self.clear()
