@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QComboBox,
     QProgressBar,
+    QLineEdit,
 )
 
 
@@ -33,6 +34,19 @@ class AIPanel(QWidget):
         layout.addWidget(self.task)
 
         # -----------------------------
+        # Question (For RAG)
+        # -----------------------------
+        layout.addWidget(QLabel("Question"))
+
+        self.question = QLineEdit()
+
+        self.question.setPlaceholderText(
+            "Ask anything about the indexed document..."
+        )
+
+        layout.addWidget(self.question)
+
+        # -----------------------------
         # Model Selection
         # -----------------------------
         layout.addWidget(QLabel("Model"))
@@ -51,6 +65,7 @@ class AIPanel(QWidget):
 
         self.pages = QTextEdit()
         self.pages.setMaximumHeight(70)
+
         self.pages.setPlaceholderText(
             "Examples:\n"
             "All\n"
@@ -64,6 +79,7 @@ class AIPanel(QWidget):
         # Run Button
         # -----------------------------
         self.process = QPushButton("▶ Run AI")
+
         layout.addWidget(self.process)
 
         # -----------------------------
@@ -72,6 +88,7 @@ class AIPanel(QWidget):
         layout.addWidget(QLabel("Progress"))
 
         self.progress = QProgressBar()
+
         self.progress.setValue(0)
 
         layout.addWidget(self.progress)
@@ -82,6 +99,7 @@ class AIPanel(QWidget):
         layout.addWidget(QLabel("AI Output"))
 
         self.result = QTextEdit()
+
         self.result.setReadOnly(True)
 
         layout.addWidget(self.result)

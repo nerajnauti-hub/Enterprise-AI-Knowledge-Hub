@@ -1,5 +1,4 @@
 from app.ai.prompts import PROMPTS
-from app.ai.tasks import AITask
 from app.services.ollama_client import OllamaClient
 
 
@@ -18,5 +17,12 @@ class AIEngine:
             text=text,
             **kwargs
         )
+
+        return self.client.generate(prompt)
+
+    # -----------------------------
+    # Generic Prompt (Used by RAG)
+    # -----------------------------
+    def generate(self, prompt):
 
         return self.client.generate(prompt)
