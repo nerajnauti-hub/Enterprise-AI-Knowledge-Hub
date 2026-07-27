@@ -14,6 +14,7 @@ from app.widgets.ai_panel import AIPanel
 
 from app.document.document_controller import DocumentController
 from app.workers.ai_worker import AIWorker
+from app.workers.indexing_worker import IndexingWorker
 
 
 class MainWindow(QMainWindow):
@@ -32,6 +33,8 @@ class MainWindow(QMainWindow):
         self.current_document = None
         self.thread = None
         self.worker = None
+        self.indexing_thread = None
+        self.indexing_worker = None
 
         # -----------------------------------
         # UI
@@ -92,9 +95,76 @@ class MainWindow(QMainWindow):
                 f"Opened : {document.filename}"
             )
 
+            # Automatically index the document
+            self.index_document(document)
+
         except Exception as e:
 
             self.statusBar().showMessage(str(e))
+
+    # =====================================================
+
+    def index_document(self, document):
+        """Automatically index the document in the background"""
+
+        self.statusBar().showMessage(
+            f"Indexing: {document.filename}..."
+        )
+
+        self.indexing_worker = IndexingWorker(document)
+
+        self.indexing_thread = QThread()
+
+        self.indexing_worker.moveToThread(self.indexing_thread)
+
+        self.indexing_thread.started.connect(
+            self.indexing_worker.run
+        )
+
+        self.indexing_worker.finished.connect(
+            self.on_indexing_finished
+        )
+
+        self.indexing_worker.error.connect(
+            self.on_indexing_error
+        )
+
+        self.indexing_worker.progress.connect(
+            self.on_indexing_progress
+        )
+
+        self.indexing_worker.finished.connect(
+            self.indexing_thread.quit
+        )
+
+        self.indexing_thread.finished.connect(
+            self.indexing_thread.deleteLater
+        )
+
+        self.indexing_thread.start()
+
+    # =====================================================
+
+    def on_indexing_progress(self, message):
+        """Handle indexing progress updates"""
+
+        self.statusBar().showMessage(message)
+
+    # =====================================================
+
+    def on_indexing_finished(self, message):
+        """Handle successful indexing completion"""
+
+        self.statusBar().showMessage(message)
+
+    # =====================================================
+
+    def on_indexing_error(self, error):
+        """Handle indexing errors"""
+
+        error_msg = f"Indexing failed: {error}"
+
+        self.statusBar().showMessage(error_msg)
 
     # =====================================================
 
